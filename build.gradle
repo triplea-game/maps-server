@@ -1,0 +1,78 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'io.freefair.lombok' version '6.5.1'
+    id 'com.diffplug.spotless' version '6.11.0'
+}
+
+
+apply plugin: 'java'
+apply plugin: 'pmd'
+apply plugin: 'maven-publish'
+apply plugin: 'io.freefair.lombok'
+apply plugin: 'com.diffplug.spotless'
+
+group = 'org.triplea'
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+def revisionCount() {
+    ['sh', '-c', 'git rev-list --count HEAD'].execute().text.trim()
+}
+version = "1.0." + revisionCount()
+
+jar {
+    archivesBaseName = 'org.triplea.[UPDATE-ME-repo-name]'
+}
+
+repositories {
+    mavenCentral()
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/triplea-game/maps-client")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
+
+test {
+    useJUnitPlatform()
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+        removeUnusedImports()
+        endWithNewline()
+        indentWithSpaces()
+        trimTrailingWhitespace()
+    }
+}
+
+pmd {
+    consoleOutput = true
+    ruleSetFiles = files(rootProject.file('pmd.xml'))
+    ruleSets = []
+    incrementalAnalysis = true
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.1'
+    testImplementation 'org.slf4j:slf4j-simple:2.0.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.9.1'
+}
