@@ -12,4 +12,4 @@ jobs:
       - name: Code Checks
         run: ./gradlew check
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          READ_PACKAGES_TOKEN: ${{ secrets.READ_GITHUB_PACKAGES_TOKEN }}

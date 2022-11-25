@@ -29,8 +29,8 @@ repositories {
     maven {
         url = uri("https://maven.pkg.github.com/triplea-game/maps-client")
         credentials {
-            username = project.findProperty("gpr.user") ?: project.findProperty("triplea.github.username")
-            password = project.findProperty("gpr.key") ?:  project.findProperty("triplea.github.access_token")
+            username = project.findProperty("triplea.github.username") ?: 'tripleabuilderbot'
+            password = project.findProperty("triplea.github.access_token") ?: System.getenv('READ_PACKAGES_TOKEN')
         }
     }
 }
