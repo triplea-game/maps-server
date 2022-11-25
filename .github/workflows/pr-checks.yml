@@ -11,3 +11,5 @@ jobs:
           distribution: 'adopt'
       - name: Code Checks
         run: ./gradlew check
+        env:
+          READ_PACKAGES_TOKEN: ${{ secrets.READ_GITHUB_PACKAGES_TOKEN }}
