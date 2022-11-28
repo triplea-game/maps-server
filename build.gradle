@@ -58,7 +58,7 @@ pmd {
 }
 
 ext {
-    dropwizardVersion='2.1.0'
+    dropwizardVersion='2.1.4'
 }
 dependencies {
     implementation "io.dropwizard:dropwizard-auth:$dropwizardVersion"
