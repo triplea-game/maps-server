@@ -1,6 +1,8 @@
 package org.triplea.maps.server;
 
 import io.dropwizard.Application;
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +28,12 @@ public class MapsServer extends Application<MapsServerConfiguration> {
   }
 
   @Override
-  public void initialize(final Bootstrap<MapsServerConfiguration> bootstrap) {}
+  public void initialize(final Bootstrap<MapsServerConfiguration> bootstrap) {
+    // enable environment variables in configuration.yml file
+    bootstrap.setConfigurationSourceProvider(
+        new SubstitutingSourceProvider(
+            bootstrap.getConfigurationSourceProvider(), new EnvironmentVariableSubstitutor(false)));
+  }
 
   @Override
   public void run(final MapsServerConfiguration configuration, final Environment environment) {}
