@@ -1,0 +1,57 @@
+# Runs when master branch is updated.
+# Creates docker image & publishes to docker packages
+# Uses ansible to setup & configure production
+# Executes a blue/green deployment of the latest code
+name: Master Branch Build
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    env:
+      IS_MASTER_BUILD: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Run Build Checks
+        # We skip 'spotlessApply' such that only 'spotlessCheck' will run to validate formatting.
+        # This is a good setup for a CI server, meanwhile if a developer runs 'verify', they
+        # will have the 'spotlessApply' task run to automatically format the code.
+        run: ./verify.sh --exclude-task spotlessApply
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GitHub Container Registry
+        if: ${{ env.IS_MASTER_BUILD }}
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: build database docker container
+        if: ${{ env.IS_MASTER_BUILD }}
+        run: |
+          docker build database/sql --tag ghcr.io/triplea-game/maps-server/flyway:latest
+          docker push ghcr.io/triplea-game/lobby/maps-server:latest
+      - name: build server docker container
+        if: ${{ env.IS_MASTER_BUILD }}
+        run: |
+          docker build . --tag ghcr.io/triplea-game/maps-server/server:latest
+          docker push ghcr.io/triplea-game/maps-server/server:latest
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+#      - name: Update production
+#        run: |
+#          pip install ansible
+#          # print ansible version for help debugging
+#          ansible --version
+#          cd deploy/
+#          ANSIBLE_REMOTE_USER=deploy-lobby APPLY=1 ./run.sh
+#        env:
+#          TRIPLEA_ANSIBLE_VAULT_PASSWORD: ${{ secrets.TRIPLEA_ANSIBLE_VAULT_PASSWORD }}
+
