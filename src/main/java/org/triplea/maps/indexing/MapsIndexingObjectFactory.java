@@ -13,7 +13,6 @@ import org.triplea.maps.indexing.tasks.CommitDateFetcher;
 import org.triplea.maps.indexing.tasks.DownloadSizeFetcher;
 import org.triplea.maps.indexing.tasks.MapDescriptionReader;
 import org.triplea.maps.indexing.tasks.MapNameReader;
-import org.triplea.maps.indexing.tasks.SkipMapIndexingCheck;
 import org.triplea.server.lib.scheduled.tasks.ScheduledTask;
 
 @UtilityClass
@@ -25,22 +24,22 @@ public class MapsIndexingObjectFactory {
   public static Managed buildMapsIndexingSchedule(
       final MapsServerConfig configuration, final Jdbi jdbi) {
 
-    var githubApiClient = configuration.createGithubApiClient();
+    //    var githubApiClient = configuration.createGithubApiClient();
 
     return ScheduledTask.builder()
         .taskName("Map-Indexing")
         .delay(Duration.ofSeconds(10))
         .period(Duration.ofMinutes(configuration.getMapIndexingPeriodMinutes()))
-        .task(
-            MapIndexingTaskRunner.builder()
-                .githubApiClient(githubApiClient)
-                .mapIndexer(
-                    mapIndexingTask(
-                        githubApiClient,
-                        new SkipMapIndexingCheck(jdbi.onDemand(MapIndexDao.class))))
-                .mapIndexDao(jdbi.onDemand(MapIndexDao.class))
-                .indexingTaskDelaySeconds(configuration.getIndexingTaskDelaySeconds())
-                .build())
+        //        .task(
+        //            MapIndexingTaskRunner.builder()
+        //                .githubApiClient(githubApiClient)
+        //                .mapIndexer(
+        //                    mapIndexingTask(
+        //                        githubApiClient,
+        //                        new SkipMapIndexingCheck(jdbi.onDemand(MapIndexDao.class))))
+        //                .mapIndexDao(jdbi.onDemand(MapIndexDao.class))
+        //                .indexingTaskDelaySeconds(configuration.getIndexingTaskDelaySeconds())
+        //                .build())
         .build();
   }
 

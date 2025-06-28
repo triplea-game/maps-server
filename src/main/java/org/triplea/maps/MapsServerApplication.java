@@ -1,15 +1,14 @@
 package org.triplea.maps;
 
-import io.dropwizard.Application;
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
+import io.dropwizard.core.Application;
+import io.dropwizard.core.setup.Bootstrap;
+import io.dropwizard.core.setup.Environment;
 import io.dropwizard.jdbi3.JdbiFactory;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
-import java.util.List;
+import io.dropwizard.jdbi3.bundles.JdbiExceptionsBundle;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
-import org.triplea.dropwizard.common.IllegalArgumentMapper;
-import org.triplea.dropwizard.common.JdbiLogging;
-import org.triplea.dropwizard.common.ServerConfiguration;
 import org.triplea.maps.indexing.MapsIndexingObjectFactory;
 
 /**
@@ -21,8 +20,6 @@ import org.triplea.maps.indexing.MapsIndexingObjectFactory;
 public class MapsServerApplication extends Application<MapsServerConfig> {
 
   private static final String[] DEFAULT_ARGS = new String[] {"server", "configuration.yml"};
-
-  private ServerConfiguration<MapsServerConfig> serverConfiguration;
 
   /**
    * Main entry-point method, launches the drop-wizard http server. If no args are passed then will
@@ -36,10 +33,12 @@ public class MapsServerApplication extends Application<MapsServerConfig> {
 
   @Override
   public void initialize(final Bootstrap<MapsServerConfig> bootstrap) {
-    serverConfiguration =
-        ServerConfiguration.build(bootstrap)
-            .enableEnvironmentVariablesInConfig()
-            .enableBetterJdbiExceptions();
+    // enable environment variables in configuration.yml
+    bootstrap.setConfigurationSourceProvider(
+        new SubstitutingSourceProvider(
+            bootstrap.getConfigurationSourceProvider(), new EnvironmentVariableSubstitutor(false)));
+    // Better JDBI exceptions
+    bootstrap.addBundle(new JdbiExceptionsBundle());
   }
 
   @Override
@@ -49,10 +48,6 @@ public class MapsServerApplication extends Application<MapsServerConfig> {
             .build(environment, configuration.getDatabase(), "postgresql-connection-pool");
 
     MapsModuleRowMappers.rowMappers().forEach(jdbi::registerRowMapper);
-
-    if (configuration.isLogSqlStatements()) {
-      JdbiLogging.registerSqlLogger(jdbi);
-    }
 
     if (configuration.isMapIndexingEnabled()) {
       environment
@@ -66,10 +61,7 @@ public class MapsServerApplication extends Application<MapsServerConfig> {
     } else {
       log.info("Map indexing is disabled");
     }
-
-    serverConfiguration.registerExceptionMappers(environment, List.of(new IllegalArgumentMapper()));
-
-    List.of(MapsController.build(jdbi), MapTagAdminController.build(jdbi))
-        .forEach(controller -> environment.jersey().register(controller));
+    environment.jersey().register(MapsController.build(jdbi));
+    environment.jersey().register(MapTagAdminController.build(jdbi));
   }
 }

@@ -1,9 +1,13 @@
 package org.triplea.maps;
 
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import java.util.List;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import org.jdbi.v3.core.Jdbi;
 import org.triplea.http.client.GenericServerResponse;
@@ -12,10 +16,12 @@ import org.triplea.http.client.maps.admin.MapTagMetaData;
 import org.triplea.http.client.maps.admin.UpdateMapTagRequest;
 import org.triplea.maps.tags.MapTagAdminModule;
 import org.triplea.maps.tags.UpdateMapTagResult;
-import org.triplea.spitfire.server.HttpController;
 
-@AllArgsConstructor
-public class MapTagAdminController extends HttpController {
+@jakarta.ws.rs.Path("/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class MapTagAdminController {
   private final MapTagAdminModule mapTagAdminModule;
 
   public static MapTagAdminController build(final Jdbi jdbi) {
