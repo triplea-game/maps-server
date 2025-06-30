@@ -1,0 +1,4 @@
+- hosts: maps
+  roles:
+    - nginx_conf
+    - maps_server

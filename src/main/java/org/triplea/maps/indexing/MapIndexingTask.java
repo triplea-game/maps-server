@@ -61,6 +61,7 @@ class MapIndexingTask implements Function<MapRepoListing, Optional<MapIndexingRe
             .mapRepoUri(mapRepoListing.getUri().toString())
             .lastCommitDate(lastCommitDateOnRepo)
             .description(description)
+            .defaultBranch(mapRepoListing.getDefaultBranch())
             .downloadUri(downloadUri)
             .previewImageUri(previewImageUri)
             .mapDownloadSizeInBytes(downloadSize)

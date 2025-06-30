@@ -1,5 +1,4 @@
 githubApiToken: ${GITHUB_API_TOKEN:-}
-githubWebServiceUrl: https://api.github.com
 githubMapsOrgName: triplea-maps
 
 
@@ -27,3 +26,9 @@ indexingTaskDelaySeconds: ${MAP_INDEXING_DELAY_SECONDS:-120}
 
 # Whether to print out SQL statements as executed, useful for debugging.
 logSqlStatements: false
+
+database:
+  driverClass: org.postgresql.Driver
+  user: ${DATABASE_USER:-maps_user}
+  password: ${DATABASE_PASSWORD:-maps_user}
+  url: jdbc:postgresql://${DB_URL:-localhost:5432/maps_db}

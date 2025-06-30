@@ -3,10 +3,9 @@ package org.triplea.maps;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.core.Configuration;
 import io.dropwizard.db.DataSourceFactory;
-import java.net.URI;
 import lombok.Getter;
 import lombok.Setter;
-import org.triplea.http.client.github.GithubApiClient;
+import org.triplea.http.client.github.GithubClient;
 
 /**
  * This configuration class represents the configuration values in the server YML configuration. An
@@ -15,12 +14,7 @@ import org.triplea.http.client.github.GithubApiClient;
  * YML configuration file.
  */
 public class MapsServerConfig extends Configuration {
-
   @JsonProperty @Getter private final DataSourceFactory database = new DataSourceFactory();
-
-  @Getter(onMethod_ = {@JsonProperty})
-  @Setter(onMethod_ = {@JsonProperty})
-  private String githubWebServiceUrl;
 
   /** Webservice token, should be an API token for the TripleA builder bot account. */
   @Getter(onMethod_ = {@JsonProperty})
@@ -47,12 +41,7 @@ public class MapsServerConfig extends Configuration {
   @Setter(onMethod_ = {@JsonProperty})
   private boolean logSqlStatements;
 
-  public GithubApiClient createGithubApiClient() {
-    return GithubApiClient.builder()
-        .stubbingModeEnabled(false)
-        .authToken(githubApiToken)
-        .uri(URI.create(githubWebServiceUrl))
-        .org(githubMapsOrgName)
-        .build();
+  public GithubClient createGithubApiClient() {
+    return GithubClient.build(githubApiToken, githubMapsOrgName);
   }
 }

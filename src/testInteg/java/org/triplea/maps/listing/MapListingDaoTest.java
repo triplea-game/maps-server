@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.triplea.maps.MapsModuleDatabaseTestSupport;
+import org.triplea.maps.IntegTestExtension;
 
 @DataSet(value = "map_index.yml,map_tag_value.yml", useSequenceFiltering = false)
-@ExtendWith(MapsModuleDatabaseTestSupport.class)
+@ExtendWith(IntegTestExtension.class)
 @ExtendWith(DBUnitExtension.class)
 class MapListingDaoTest {
 

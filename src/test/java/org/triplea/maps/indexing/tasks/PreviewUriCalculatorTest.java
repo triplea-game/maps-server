@@ -11,7 +11,7 @@ class PreviewUriCalculatorTest {
   void verifyDownloadUriCalculation() {
     final var mapRepoListing =
         MapRepoListing.builder()
-            .htmlUrl("https://github.com/triplea-maps/test-map")
+            .uri("https://github.com/triplea-maps/test-map")
             .name("repo name")
             .build();
 

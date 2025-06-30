@@ -6,7 +6,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
-import org.triplea.http.client.github.GithubApiClient;
+import org.triplea.http.client.github.GithubClient;
 import org.triplea.http.client.github.MapRepoListing;
 
 /**
@@ -17,13 +17,12 @@ import org.triplea.http.client.github.MapRepoListing;
 @Slf4j
 public class CommitDateFetcher implements Function<MapRepoListing, Optional<Instant>> {
 
-  @Nonnull private final GithubApiClient githubApiClient;
+  @Nonnull private final GithubClient githubClient;
 
   @Override
   public Optional<Instant> apply(final MapRepoListing mapRepoListing) {
     try {
-      return Optional.of(
-          githubApiClient.fetchBranchInfo(mapRepoListing.getName(), "master").getLastCommitDate());
+      return Optional.of(githubClient.getLatestCommitDate(mapRepoListing.getName(), "master"));
     } catch (final Exception e) {
       log.error(
           "Could not index map: {}, unable to fetch last commit date. Either the last commit"

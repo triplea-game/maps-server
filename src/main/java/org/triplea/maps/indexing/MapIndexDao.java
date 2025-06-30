@@ -14,15 +14,16 @@ public interface MapIndexDao {
   /** Upserts a map indexing result into the map_index table. */
   @SqlUpdate(
       "insert into map_index("
-          + "    map_name, repo_url, description, "
+          + "    map_name, repo_url, default_branch, description, "
           + "    download_url, preview_image_url, download_size_bytes, last_commit_date)\n"
           + "values("
-          + "     :mapName, :mapRepoUri, :description, "
+          + "     :mapName, :mapRepoUri, :defaultBranch, :description, "
           + "     :downloadUri, :previewImageUri, :mapDownloadSizeInBytes, :lastCommitDate)\n"
           + "on conflict(repo_url)\n"
           + "do update set\n"
           + "   map_name = :mapName,"
           + "   description = :description,"
+          + "   default_branch = :defaultBranch,"
           + "   download_url = :downloadUri,"
           + "   preview_image_url = :previewImageUri,"
           + "   download_size_bytes = :mapDownloadSizeInBytes,"

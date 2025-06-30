@@ -13,11 +13,11 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.triplea.maps.MapsModuleDatabaseTestSupport;
+import org.triplea.maps.IntegTestExtension;
 
 @AllArgsConstructor
 @DataSet(value = "map_index.yml", useSequenceFiltering = false)
-@ExtendWith(MapsModuleDatabaseTestSupport.class)
+@ExtendWith(IntegTestExtension.class)
 @ExtendWith(DBUnitExtension.class)
 class MapIndexDaoTest {
 
@@ -35,6 +35,7 @@ class MapIndexDaoTest {
             .downloadUri("http-map-repo-3-download-updated-url")
             .previewImageUri("http-preview-image-url-3")
             .description("description-updated")
+            .defaultBranch("default-branch-updated")
             .build());
   }
 
@@ -51,6 +52,7 @@ class MapIndexDaoTest {
             .downloadUri("http-map-repo-url-2/archives/master.zip")
             .previewImageUri("http-preview-image-url-2")
             .description("description-repo-2")
+            .defaultBranch("master")
             .build());
   }
 

@@ -15,7 +15,7 @@ class MapIndexingTaskTest {
   private static final Instant instant = Instant.now();
 
   private static final MapRepoListing mapRepoListing =
-      MapRepoListing.builder().htmlUrl("http://url").name("repo name").build();
+      MapRepoListing.builder().uri("http://url").name("repo name").defaultBranch("main").build();
 
   @Test
   @DisplayName("On successful indexing, data is aggregated correctly")
@@ -40,7 +40,7 @@ class MapIndexingTaskTest {
     assertThat(mapIndexingResult.getMapRepoUri(), is(mapRepoListing.getUri().toString()));
     assertThat(
         mapIndexingResult.getDownloadUri(),
-        is(mapRepoListing.getUri().toString() + "/archive/refs/heads/master.zip"));
+        is(mapRepoListing.getUri() + "/archive/refs/heads/master.zip"));
     assertThat(mapIndexingResult.getMapDownloadSizeInBytes(), is(10L));
   }
 

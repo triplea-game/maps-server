@@ -4,18 +4,20 @@ import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
 import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresentAndIs;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.google.common.base.Strings;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.triplea.http.client.github.MapRepoListing;
-import org.triplea.test.common.StringToInputStream;
 
 class DownloadSizeFetcherTest {
 
   private static final MapRepoListing mapRepoListing =
-      MapRepoListing.builder().name("repo name").htmlUrl("htttps://fake-uri").build();
+      MapRepoListing.builder().name("repo name").uri("htttps://fake-uri").build();
 
   /**
    * In this test we stub the downloaded content to be a fixed size string. We then verify the
@@ -26,8 +28,7 @@ class DownloadSizeFetcherTest {
   void returnContentSizeDownloaded() {
     final DownloadSizeFetcher downloadSizeFetcher = new DownloadSizeFetcher();
     final String contentsString = "this is a test";
-    downloadSizeFetcher.setDownloadFunction(
-        uri -> StringToInputStream.asInputStream(contentsString));
+    downloadSizeFetcher.setDownloadFunction(uri -> asInputStream(contentsString));
 
     final Optional<Long> result = downloadSizeFetcher.apply(mapRepoListing);
 
@@ -36,6 +37,11 @@ class DownloadSizeFetcherTest {
             + "byte length of that string.",
         result,
         isPresentAndIs((long) contentsString.getBytes(StandardCharsets.UTF_8).length));
+  }
+
+  private static InputStream asInputStream(final String inputString) {
+    return new ByteArrayInputStream(
+        Strings.nullToEmpty(inputString).getBytes(StandardCharsets.UTF_8));
   }
 
   @Test

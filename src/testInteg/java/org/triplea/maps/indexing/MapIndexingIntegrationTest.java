@@ -20,7 +20,6 @@ public class MapIndexingIntegrationTest {
   void runIndexingOnTestMap() {
     MapsServerConfig mapsServerConfig = new MapsServerConfig();
     mapsServerConfig.setGithubMapsOrgName("triplea-maps");
-    mapsServerConfig.setGithubWebServiceUrl("https://api.github.com");
 
     final MapIndexingTask mapIndexingTaskRunner =
         MapsIndexingObjectFactory.mapIndexingTask(
@@ -31,7 +30,8 @@ public class MapIndexingIntegrationTest {
             .apply(
                 MapRepoListing.builder()
                     .name("test-map")
-                    .htmlUrl("https://github.com/triplea-maps/test-map")
+                    .uri("https://github.com/triplea-maps/test-map")
+                    .defaultBranch("master")
                     .build())
             .orElseThrow(
                 () -> new AssertionError("Expected a result to be returned, check logs for cause"));
@@ -47,6 +47,7 @@ public class MapIndexingIntegrationTest {
         result.getDescription(),
         containsString("<br><b><em>by test</em></b>"));
 
+    assertThat(result.getDefaultBranch(), is("master"));
     assertThat(
         result.getDownloadUri(),
         is("https://github.com/triplea-maps/test-map/archive/refs/heads/master.zip"));

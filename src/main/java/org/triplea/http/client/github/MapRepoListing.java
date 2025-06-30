@@ -5,17 +5,18 @@ import java.net.URI;
 import lombok.*;
 
 /** Response object from Github listing the details of an organization's repositories. */
-@ToString
-@AllArgsConstructor
-@EqualsAndHashCode
+@Value
 @Builder
 public class MapRepoListing {
   @SerializedName("html_url")
-  String htmlUrl;
+  String uri;
+
+  @SerializedName("default_branch")
+  String defaultBranch;
 
   @Getter String name;
 
   public URI getUri() {
-    return URI.create(htmlUrl);
+    return URI.create(uri);
   }
 }

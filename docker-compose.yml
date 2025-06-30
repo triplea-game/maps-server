@@ -1,15 +1,14 @@
 # Launches a maps server with database
 
-version: '3'
 services:
   database:
-    image: postgres:10
+    image: postgres:17
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     volumes:
-      - ./.docker-compose/database/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./database/init/01-init-database.sql:/docker-entrypoint-initdb.d/01-init-database.sql
     ports:
       - "${DATABASE_PORT}:5432"
     healthcheck:
@@ -19,7 +18,7 @@ services:
       timeout: 3s
   flyway:
     build:
-      context: database/sql/
+      context: database/
       dockerfile: Dockerfile
     command: >
       -locations=filesystem:/flyway/sql
@@ -27,18 +26,17 @@ services:
       -user=maps_user
       -password=maps_user
       -url=jdbc:postgresql://database:5432/maps_db
+      -ignoreMigrationPatterns="repeatable:missing"
       migrate
-    volumes:
-      - ${PWD}/.docker-compose/docker-flyway.config:/flyway/conf/flyway.config
     depends_on:
       - database
-  lobby:
+  maps:
     build:
       dockerfile: Dockerfile
     environment:
       - DATABASE_USER=maps_user
       - DATABASE_PASSWORD=maps_user
-      - DB_URL=database:${DATABASE_PORT}/maps_db
+      - DB_URL=database:5432/maps_db
     ports:
       - "${SERVER_PORT}:8080"
     depends_on:

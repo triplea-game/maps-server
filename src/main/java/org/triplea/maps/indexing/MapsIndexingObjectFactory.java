@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.function.BiPredicate;
 import lombok.experimental.UtilityClass;
 import org.jdbi.v3.core.Jdbi;
-import org.triplea.http.client.github.GithubApiClient;
+import org.triplea.http.client.github.GithubClient;
 import org.triplea.http.client.github.MapRepoListing;
 import org.triplea.maps.MapsServerConfig;
 import org.triplea.maps.indexing.tasks.CommitDateFetcher;
@@ -44,10 +44,10 @@ public class MapsIndexingObjectFactory {
   }
 
   MapIndexingTask mapIndexingTask(
-      final GithubApiClient githubApiClient,
+      final GithubClient githubApiClient,
       final BiPredicate<MapRepoListing, Instant> skipMapIndexingCheck) {
     return MapIndexingTask.builder()
-        .lastCommitDateFetcher(CommitDateFetcher.builder().githubApiClient(githubApiClient).build())
+        .lastCommitDateFetcher(CommitDateFetcher.builder().githubClient(githubApiClient).build())
         .skipMapIndexingCheck(skipMapIndexingCheck)
         .mapNameReader(MapNameReader.builder().build())
         .mapDescriptionReader(new MapDescriptionReader())

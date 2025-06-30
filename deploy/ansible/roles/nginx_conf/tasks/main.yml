@@ -1,0 +1,30 @@
+- name: apt install nginx
+  become: true
+  apt:
+    name: nginx
+    state: present
+
+- name: nginx config
+  become: true
+  notify: reload_nginx
+  template:
+    src: maps_server.conf
+    dest: /etc/nginx/sites-enabled/maps_server.conf
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: ensure nginx is started
+  become: true
+  systemd:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: allow firewall ports
+  become: true
+  ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+

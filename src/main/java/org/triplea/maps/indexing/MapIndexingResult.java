@@ -41,4 +41,6 @@ public class MapIndexingResult {
    * this field will continue an error message with details on how to fix the missing description.
    */
   @Nonnull String description;
+
+  @Nonnull String defaultBranch;
 }

@@ -7,6 +7,7 @@ map_index:
     preview_image_url: 'http-preview-image-url'
     download_size_bytes: 4000
     last_commit_date: 2000-12-01 23:59:20.0
+    default_branch: 'master'
   - id: 20
     map_name: map-name-updated
     repo_url: "http-map-repo-url-2"
@@ -15,3 +16,4 @@ map_index:
     preview_image_url: 'http-preview-image-url-3'
     download_size_bytes: 6789
     last_commit_date: 2000-01-12 23:59:00.0
+    default_branch: 'default-branch-updated'

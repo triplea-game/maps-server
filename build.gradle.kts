@@ -17,7 +17,7 @@ repositories {
         url = uri("https://maven.pkg.github.com/triplea-game/triplea")
         credentials {
             username = System.getenv("GITHUB_ACTOR") ?: project.findProperty("triplea.github.username") as String?
-                    password = System.getenv("GH_TOKEN") ?: project.findProperty("triplea.github.access.token") as String?
+            password = System.getenv("GH_TOKEN") ?: project.findProperty("triplea.github.access.token") as String?
         }
     }
 }
@@ -60,6 +60,12 @@ tasks.check {
     dependsOn(testIntegTask)
 }
 
+tasks.register<Exec>("dockerComposeClean") {
+    group = "docker"
+    description = "Docker compose stop and removes volumes"
+    commandLine("docker", "compose", "down", "--volumes")
+}
+
 ///* docker compose used to set up integ tests, starts a server and database */
 // See: https://github.com/avast/gradle-docker-compose-plugin
 configure<com.avast.gradle.dockercompose.ComposeExtension> {
@@ -75,7 +81,7 @@ tasks.composeBuild {
 }
 
 tasks.clean {
-    dependsOn(tasks.composeDownForced)
+    dependsOn(tasks.findByName("dockerComposeClean"))
 }
 
 tasks.withType<Test> {
@@ -106,14 +112,16 @@ dependencies {
     implementation("javax.activation:activation:1.1.1")
     implementation("javax.servlet:servlet-api:2.5")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
+    implementation("org.apache.httpcomponents:httpclient:4.3.4")
     implementation("org.java-websocket:Java-WebSocket:1.6.0")
     implementation("org.jdbi:jdbi3-core:3.49.5")
     implementation("org.jdbi:jdbi3-sqlobject:3.49.5")
-    implementation("triplea:domain-data:2.7.14846")
-    implementation("triplea:feign-common:2.7.14846")
-    implementation("triplea:java-extras:2.7.14846")
-    implementation("triplea:lobby-client:2.7.14846")
-    implementation("triplea:websocket-client:2.7.14846")
+    implementation("org.snakeyaml:snakeyaml-engine:2.9")
+    implementation("triplea:domain-data:2.7.15062")
+    implementation("triplea:feign-common:2.7.15062")
+    implementation("triplea:java-extras:2.7.15062")
+    implementation("triplea:lobby-client:2.7.15062")
+    implementation("triplea:websocket-client:2.7.15062")
     runtimeOnly("org.postgresql:postgresql:42.7.7")
 
     testImplementation("com.github.database-rider:rider-junit5:1.43.0")
