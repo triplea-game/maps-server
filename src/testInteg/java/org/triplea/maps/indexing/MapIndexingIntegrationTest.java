@@ -8,6 +8,10 @@ import static org.hamcrest.core.StringContains.containsString;
 import org.junit.jupiter.api.Test;
 import org.triplea.http.client.github.MapRepoListing;
 import org.triplea.maps.MapsServerConfig;
+import org.triplea.maps.indexing.tasks.CommitDateFetcher;
+import org.triplea.maps.indexing.tasks.DownloadSizeFetcher;
+import org.triplea.maps.indexing.tasks.MapDescriptionReader;
+import org.triplea.maps.indexing.tasks.MapNameReader;
 
 /**
  * Test that does a live indexing (goes over network to github) of 'triplea-maps/test-map'. We'll
@@ -22,8 +26,16 @@ public class MapIndexingIntegrationTest {
     mapsServerConfig.setGithubMapsOrgName("triplea-maps");
 
     final MapIndexingTask mapIndexingTaskRunner =
-        MapsIndexingObjectFactory.mapIndexingTask(
-            mapsServerConfig.createGithubApiClient(), (repo, repoLastCommitDate) -> false);
+        MapIndexingTask.builder()
+            .lastCommitDateFetcher(
+                CommitDateFetcher.builder()
+                    .githubClient(mapsServerConfig.createGithubApiClient())
+                    .build())
+            .skipMapIndexingCheck((repo, repoLastCommitDate) -> false)
+            .mapNameReader(MapNameReader.builder().build())
+            .mapDescriptionReader(new MapDescriptionReader())
+            .downloadSizeFetcher(new DownloadSizeFetcher())
+            .build();
 
     final MapIndexingResult result =
         mapIndexingTaskRunner

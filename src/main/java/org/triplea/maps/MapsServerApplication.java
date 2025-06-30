@@ -9,7 +9,13 @@ import io.dropwizard.jdbi3.JdbiFactory;
 import io.dropwizard.jdbi3.bundles.JdbiExceptionsBundle;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.mapper.reflect.ConstructorMapper;
 import org.triplea.maps.indexing.MapsIndexingObjectFactory;
+import org.triplea.maps.listing.MapListingRecord;
+import org.triplea.maps.listing.MapTagRecord;
+import org.triplea.maps.tags.MapTagMetaDataRecord;
+
+import java.util.List;
 
 /**
  * Main entry-point for launching drop wizard HTTP server. This class is responsible for configuring
@@ -47,7 +53,12 @@ public class MapsServerApplication extends Application<MapsServerConfig> {
         new JdbiFactory()
             .build(environment, configuration.getDatabase(), "postgresql-connection-pool");
 
-    MapsModuleRowMappers.rowMappers().forEach(jdbi::registerRowMapper);
+    // register JDBI row mappers
+    List.of(
+            ConstructorMapper.factory(MapListingRecord.class),
+            ConstructorMapper.factory(MapTagRecord.class),
+            ConstructorMapper.factory(MapTagMetaDataRecord.class))
+        .forEach(jdbi::registerRowMapper);
 
     if (configuration.isMapIndexingEnabled()) {
       environment

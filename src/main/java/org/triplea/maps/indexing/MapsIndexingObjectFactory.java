@@ -43,15 +43,15 @@ public class MapsIndexingObjectFactory {
         .build();
   }
 
-  MapIndexingTask mapIndexingTask(
-      final GithubClient githubApiClient,
-      final BiPredicate<MapRepoListing, Instant> skipMapIndexingCheck) {
-    return MapIndexingTask.builder()
-        .lastCommitDateFetcher(CommitDateFetcher.builder().githubClient(githubApiClient).build())
-        .skipMapIndexingCheck(skipMapIndexingCheck)
-        .mapNameReader(MapNameReader.builder().build())
-        .mapDescriptionReader(new MapDescriptionReader())
-        .downloadSizeFetcher(new DownloadSizeFetcher())
-        .build();
-  }
+//  MapIndexingTask mapIndexingTask(
+//      final GithubClient githubApiClient,
+//      final BiPredicate<MapRepoListing, Instant> skipMapIndexingCheck) {
+//    return MapIndexingTask.builder()
+//        .lastCommitDateFetcher(CommitDateFetcher.builder().githubClient(githubApiClient).build())
+//        .skipMapIndexingCheck(skipMapIndexingCheck)
+//        .mapNameReader(MapNameReader.builder().build())
+//        .mapDescriptionReader(new MapDescriptionReader())
+//        .downloadSizeFetcher(new DownloadSizeFetcher())
+//        .build();
+//  }
 }
