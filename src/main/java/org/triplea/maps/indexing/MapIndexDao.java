@@ -8,6 +8,7 @@ import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.customizer.BindList;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.triplea.http.client.github.MapRepoListing;
 
 public interface MapIndexDao {
 
@@ -28,7 +29,7 @@ public interface MapIndexDao {
           + "   preview_image_url = :previewImageUri,"
           + "   download_size_bytes = :mapDownloadSizeInBytes,"
           + "   last_commit_date = :lastCommitDate")
-  void upsert(@BindBean MapIndexingResult mapIndexingResult);
+  void upsert(@BindBean MapIndex mapIndex);
 
   /** Deletes maps that are not in the parameter list from the map_index table. */
   @SqlUpdate("delete from map_index where repo_url not in(<mapUriList>)")
@@ -36,4 +37,7 @@ public interface MapIndexDao {
 
   @SqlQuery("select last_commit_date from map_index where repo_url = :repoUrl")
   Optional<Instant> getLastCommitDate(@Bind("repoUrl") String repoUrl);
+
+  // TODO: implement & test
+  void recordIndexingStatus(MapRepoListing listing, MapIndexingTaskRunner.IndexingResult status);
 }

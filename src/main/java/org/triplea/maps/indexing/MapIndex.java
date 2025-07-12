@@ -9,9 +9,9 @@ import lombok.Value;
  * Data object representing a map index entry. URI is the location of the map repo, name and version
  * are read from the 'map.yml' file located in the map repo.
  */
-@Builder
+@Builder(toBuilder = true)
 @Value
-public class MapIndexingResult {
+public class MapIndex {
   /** Name of the map as found in the 'map.yml' file located in the map repo. */
   @Nonnull String mapName;
 

@@ -13,31 +13,33 @@ create table map_index
     date_updated     timestamptz  not null default now()
 );
 
-create table map_tag
+-- eg: era, difficulty
+create table map_tag_category
 (
     id serial primary key,
     name varchar(64) not null unique,
     display_order int not null unique check (display_order >=0 and display_order <= 1000)
 );
-comment on table map_tag is 'Defines the set of map tags.';
 
-create table map_tag_allowed_value
+create table map_tag
+(
+    id serial primary key,
+    value varchar(64) not null unique,
+    map_tag_category_id int not null references map_tag_category(id)
+);
+
+create table map_index_tag
 (
     id serial primary key,
     map_tag_id int not null references map_tag(id),
-    value varchar(64) not null
+    map_index_id int not null references map_index(id)
 );
-alter table map_tag_allowed_value
-    add constraint map_tag_values_unique unique (map_tag_id, value);
-comment on table map_tag_allowed_value is 'Defines the set of allowed values per tag.';
+alter table map_index_tag
+    add constraint map_index_tag_uk unique (map_tag_id, map_index_id);
+comment on table map_index_tag is 'Join table relating maps to tags';
 
-create table map_tag_value
-(
-    id serial primary key,
-    map_tag_id int not null references map_tag(id),
-    map_index_id int not null references map_index(id),
-    map_tag_allowed_value_id int not null references map_tag_allowed_value(id)
-);
-alter table map_tag_value
-    add constraint map_tag_value_unique unique (map_tag_id, map_index_id);
-comment on table map_tag_value is 'Join table relating maps to tags';
+        /*
+            assertThat(mapTags).contains(MapTag.builder().name("difficulty").value("easy").build());
+    assertThat(mapTags).contains(MapTag.builder().name("era").value("ancient").build());
+  }
+         */

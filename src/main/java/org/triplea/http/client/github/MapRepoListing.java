@@ -14,7 +14,9 @@ public class MapRepoListing {
   @SerializedName("default_branch")
   String defaultBranch;
 
-  @Getter String name;
+  public String getName() {
+    return uri.substring(uri.lastIndexOf("/") + 1);
+  }
 
   public URI getUri() {
     return URI.create(uri);

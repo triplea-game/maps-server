@@ -1,19 +1,12 @@
 package org.triplea.maps.indexing;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.StringContains.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.triplea.http.client.github.MapRepoListing;
 import org.triplea.maps.MapsServerConfig;
 
-/**
- * Test that does a live indexing (goes over network to github) of 'triplea-maps/test-map'. We'll
- * build an indexer and then run indexing on the test map. The test map will be in a known state and
- * we'll then verify the returned indexing results are as expected.
- */
+/** Validate we can scrape a real map on github and scrape correct data. */
 public class MapIndexingIntegrationTest {
 
   @Test
@@ -21,37 +14,22 @@ public class MapIndexingIntegrationTest {
     MapsServerConfig mapsServerConfig = new MapsServerConfig();
     mapsServerConfig.setGithubMapsOrgName("triplea-maps");
 
-    final MapIndexingTask mapIndexingTaskRunner =
-        MapsIndexingObjectFactory.mapIndexingTask(
-            mapsServerConfig.createGithubApiClient(), (repo, repoLastCommitDate) -> false);
+    final MapIndexer mapIndexerRunner = MapIndexer.build(mapsServerConfig.createGithubApiClient());
 
-    final MapIndexingResult result =
-        mapIndexingTaskRunner
-            .apply(
-                MapRepoListing.builder()
-                    .name("test-map")
-                    .uri("https://github.com/triplea-maps/test-map")
-                    .defaultBranch("master")
-                    .build())
-            .orElseThrow(
-                () -> new AssertionError("Expected a result to be returned, check logs for cause"));
+    final MapIndex result =
+        mapIndexerRunner.apply(
+            MapRepoListing.builder()
+                .uri("https://github.com/triplea-maps/test-map")
+                .defaultBranch("master")
+                .build());
 
-    assertThat(result.getMapRepoUri(), is("https://github.com/triplea-maps/test-map"));
-    assertThat("Map name is read from map.yml", result.getMapName(), is("Test Map"));
-    assertThat(
-        "Last commit date is parsed from an API call",
-        result.getLastCommitDate(),
-        is(notNullValue()));
-    assertThat(
-        "Description is downloaded from description.html",
-        result.getDescription(),
-        containsString("<br><b><em>by test</em></b>"));
-
-    assertThat(result.getDefaultBranch(), is("master"));
-    assertThat(
-        result.getDownloadUri(),
-        is("https://github.com/triplea-maps/test-map/archive/refs/heads/master.zip"));
-
-    assertThat(result.getMapDownloadSizeInBytes() > 0, is(true));
+    assertThat(result.getMapRepoUri()).isEqualTo("https://github.com/triplea-maps/test-map");
+    assertThat(result.getMapName()).isEqualTo("Test Map");
+    assertThat(result.getLastCommitDate()).isNotNull();
+    assertThat(result.getDescription()).contains("<br><b><em>by test</em></b>");
+    assertThat(result.getDefaultBranch()).isEqualTo("master");
+    assertThat(result.getDownloadUri())
+        .isEqualTo("https://github.com/triplea-maps/test-map/archive/refs/heads/master.zip");
+    assertThat(result.getMapDownloadSizeInBytes()).isGreaterThan(0);
   }
 }

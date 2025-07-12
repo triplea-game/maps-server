@@ -21,3 +21,22 @@ On merge to master:
 See:
 - `.github/workflows/master.yml`
 - `deploy/run.sh`
+
+
+### Connect to DB:
+
+Typically something like this (double check the container name, that can change):
+
+```bash
+docker exec -it --user postgres maps-server-database-1 psql maps_db
+```
+
+
+### Maps System Design
+
+#### Key Classes
+
+- `MapIndexer`: fetches all the data of a given map, creates a `MapIndexingResult`
+- `MapIndexingResult`: represents all desired data of a parsed map, eg: map name, download size, description
+- `MapIndexDao`: upserts `MapIndexingResult` into database
+

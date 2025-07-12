@@ -22,15 +22,18 @@ public class MapNameReader implements Function<MapRepoListing, Optional<String>>
   private Function<URI, String> downloadFunction =
       uri -> ContentDownloader.downloadAsString(uri).orElse(null);
 
+  public static URI computeMapYamlLocation(MapRepoListing mapRepoListing) {
+    return URI.create(mapRepoListing.getUri().toString() + "/blob/master/map.yml?raw=true");
+  }
+
   /**
    * Determines the expected location of a map.yml file, downloads it, reads and returns the
    * 'map_name' attribute. Returns null if the file could not be found or otherwise could not be
    * read.
    */
   @Override
-  public Optional<String> apply(final MapRepoListing mapRepoListing) {
-    final URI mapYmlUri =
-        URI.create(mapRepoListing.getUri().toString() + "/blob/master/map.yml?raw=true");
+  public Optional<String> apply(MapRepoListing mapRepoListing) {
+    final URI mapYmlUri = computeMapYamlLocation(mapRepoListing);
 
     final String mapYamlContents = downloadFunction.apply(mapYmlUri);
     if (mapYamlContents == null) {

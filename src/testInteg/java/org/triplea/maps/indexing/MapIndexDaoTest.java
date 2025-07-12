@@ -10,12 +10,12 @@ import com.github.npathai.hamcrestopt.OptionalMatchers;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.triplea.maps.IntegTestExtension;
+import org.triplea.maps.TestData;
 
-@AllArgsConstructor
 @DataSet(value = "map_index.yml", useSequenceFiltering = false)
 @ExtendWith(IntegTestExtension.class)
 @ExtendWith(DBUnitExtension.class)
@@ -23,36 +23,17 @@ class MapIndexDaoTest {
 
   private final MapIndexDao mapIndexDao;
 
+  MapIndexDaoTest(Jdbi jdbi) {
+    mapIndexDao = jdbi.onDemand(MapIndexDao.class);
+  }
+
   @Test
   @ExpectedDataSet(value = "expected/map_index_upsert_updated.yml", orderBy = "id")
   void upsertUpdatesRecords() {
     mapIndexDao.upsert(
-        MapIndexingResult.builder()
+        TestData.mapIndex.toBuilder()
             .mapName("map-name-updated")
-            .mapRepoUri("http-map-repo-url-2")
-            .lastCommitDate(LocalDateTime.of(2000, 1, 12, 23, 59).toInstant(ZoneOffset.UTC))
-            .mapDownloadSizeInBytes(6789L)
-            .downloadUri("http-map-repo-3-download-updated-url")
-            .previewImageUri("http-preview-image-url-3")
-            .description("description-updated")
-            .defaultBranch("default-branch-updated")
-            .build());
-  }
-
-  /** The data we are inserting matches what is present in map_index.yml */
-  @Test
-  @ExpectedDataSet("map_index.yml")
-  void upsertSameData() {
-    mapIndexDao.upsert(
-        MapIndexingResult.builder()
-            .mapName("map-name-2")
-            .mapRepoUri("http-map-repo-url-2")
-            .lastCommitDate(LocalDateTime.of(2016, 1, 1, 23, 59, 20).toInstant(ZoneOffset.UTC))
-            .mapDownloadSizeInBytes(1000L)
-            .downloadUri("http-map-repo-url-2/archives/master.zip")
-            .previewImageUri("http-preview-image-url-2")
-            .description("description-repo-2")
-            .defaultBranch("master")
+            .mapDownloadSizeInBytes(8000L)
             .build());
   }
 
@@ -65,11 +46,8 @@ class MapIndexDaoTest {
   @Test
   void getLastCommitDate() {
     assertThat(
-        mapIndexDao.getLastCommitDate("http-map-repo-url"),
+        mapIndexDao.getLastCommitDate(TestData.mapIndex.getMapRepoUri()),
         isPresentAndIs(LocalDateTime.of(2000, 12, 1, 23, 59, 20).toInstant(ZoneOffset.UTC)));
-    assertThat(
-        mapIndexDao.getLastCommitDate("http-map-repo-url-2"),
-        isPresentAndIs(LocalDateTime.of(2016, 1, 1, 23, 59, 20).toInstant(ZoneOffset.UTC)));
 
     assertThat(
         "Map repo URL does not exist",

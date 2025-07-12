@@ -1,8 +1,17 @@
 package org.triplea.maps.indexing;
 
+import com.google.common.annotations.VisibleForTesting;
+import java.net.URI;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.triplea.http.client.github.GithubClient;
+import org.triplea.http.client.github.MapRepoListing;
+import org.triplea.java.Interruptibles;
 
 // import org.triplea.http.client.github.GithubApiClient;
 // import org.triplea.http.client.github.MapRepoListing;
@@ -23,78 +32,94 @@ import lombok.extern.slf4j.Slf4j;
 class MapIndexingTaskRunner implements Runnable {
 
   @Nonnull private final MapIndexDao mapIndexDao;
-  //  @Nonnull private final GithubApiClient githubApiClient;
-  //  @Nonnull private final Function<MapRepoListing, Optional<MapIndexingResult>> mapIndexer;
+  @Nonnull private final GithubClient githubClient;
+  @Nonnull private final MapIndexer mapIndexer;
   @Nonnull private final Integer indexingTaskDelaySeconds;
-
-  private int totalNumberMaps;
-  private long startTimeEpochMillis;
-  private int mapsDeleted;
-  private int mapsIndexed;
 
   @Override
   public void run() {
+    int totalNumberMaps;
+    long startTimeEpochMillis;
+    int mapsDeleted;
+    int mapsIndexed;
+
     //    log.info("Map indexing started, github org: {}", githubApiClient.getOrg());
 
     startTimeEpochMillis = System.currentTimeMillis();
-    //
-    //    // get list of maps
-    //    final Collection<MapRepoListing> mapUris =
-    //        githubApiClient.listRepositories().stream()
-    //            .sorted(Comparator.comparing(MapRepoListing::getName))
-    //            .collect(Collectors.toList());
-    //
-    //    totalNumberMaps = mapUris.size();
-    //
-    //    // remove deleted maps
-    //    mapsDeleted =
-    //        mapIndexDao.removeMapsNotIn(
-    //            mapUris.stream()
-    //                .map(MapRepoListing::getUri)
-    //                .map(URI::toString)
-    //                .collect(Collectors.toList()));
-    //
-    //    // start indexing - convert maps to index to a stack and then process that
-    //    // stack at a fixed rate to avoid rate limits.
-    //    final Deque<MapRepoListing> reposToIndex = new ArrayDeque<>(mapUris);
-    //    indexNextMapRepo(reposToIndex);
+
+    // get list of maps
+    final Collection<MapRepoListing> mapUris =
+        githubClient.listRepositories().stream()
+            .sorted(Comparator.comparing(MapRepoListing::getUri))
+            .toList();
+
+    totalNumberMaps = mapUris.size();
+
+    // remove deleted maps
+    mapsDeleted =
+        mapIndexDao.removeMapsNotIn(
+            mapUris.stream()
+                .map(MapRepoListing::getUri)
+                .map(URI::toString)
+                .collect(Collectors.toList()));
+
+    // Start indexing -
+    // create a stack of maps that we might need to index, pull one off at a time and do the
+    // indexing.
+    // Sleep between iterations to avoid rate limits.
+    final Deque<MapRepoListing> reposToIndex = new ArrayDeque<>(mapUris);
+    while (reposToIndex.isEmpty()) {
+      var listing = reposToIndex.pop();
+      IndexingResult result = index(listing);
+      mapIndexDao.recordIndexingStatus(listing, result);
+      Interruptibles.sleep(indexingTaskDelaySeconds * 1000L);
+    }
+
+    //    log.info(
+    //            "Map indexing finished in {} ms, repos found: {}, repos with map.yml: {}, maps
+    // deleted: {}",
+    //            (System.currentTimeMillis() - startTimeEpochMillis),
+    //            totalNumberMaps,
+    //            mapsIndexed,
+    //            mapsDeleted);
   }
 
-  /**
-   * Recursive method to process a stack of map repo listings. On each iteration we wait a fixed
-   * delay, we then pop an element, process it, and then repeat until the stack is empty.
-   */
-  //  private void indexNextMapRepo(final Deque<MapRepoListing> reposToIndex) {
-  //    performIndexing(reposToIndex.pop());
-  //    if (reposToIndex.isEmpty()) {
-  //      notifyCompletion();
-  //    } else {
-  //      Timers.executeAfterDelay(
-  //          indexingTaskDelaySeconds, TimeUnit.SECONDS, () -> indexNextMapRepo(reposToIndex));
-  //    }
-  //  }
-
-  /**
-   * Performs the actual indexing of a single map repo listing. Indexing is two parts, first we
-   * reach out to the repo to gather indexing information, second we upsert that info into database.
-   */
-  //  private void performIndexing(final MapRepoListing mapRepoListing) {
-  //    log.info("Indexing map: " + mapRepoListing.getName());
-  //    mapIndexer
-  //        .apply(mapRepoListing)
-  //        .ifPresent(
-  //            mapIndexResult -> {
-  //              mapIndexDao.upsert(mapIndexResult);
-  //              mapsIndexed++;
-  //            });
-  //  }
-
-  private void notifyCompletion() {
-    log.info(
-        "Map indexing finished in {} ms, repos found: {}, repos with map.yml: {}, maps deleted: {}",
-        (System.currentTimeMillis() - startTimeEpochMillis),
-        totalNumberMaps,
-        mapsIndexed,
-        mapsDeleted);
+  // TODO: test me
+  @VisibleForTesting
+  IndexingResult index(MapRepoListing listing) {
+    Instant latestCommitInDatabase =
+        mapIndexDao.getLastCommitDate(listing.getUri().toString()).orElse(null);
+    Instant latestCommitOnGithub =
+        githubClient.getLatestCommitDate(listing.getName(), listing.getDefaultBranch());
+    boolean runIndexing =
+        (latestCommitInDatabase == null) || latestCommitOnGithub.isAfter(latestCommitInDatabase);
+    if (runIndexing) {
+      try {
+        MapIndex result = mapIndexer.apply(listing);
+        mapIndexDao.upsert(result);
+        return new IndexingResult(IndexingResult.ResultCode.SUCCESSFULLY_INDEXED, List.of());
+      } catch (MapIndexer.IndexingException e) {
+        return new IndexingResult(IndexingResult.ResultCode.REPO_ERROR, e.getErrors());
+      }
+    } else {
+      return new IndexingResult(IndexingResult.ResultCode.INDEXING_IS_UP_TO_DATE, List.of());
+    }
   }
+
+  @AllArgsConstructor
+  static class IndexingResult {
+    static final IndexingResult UP_TO_DATE =
+        new IndexingResult(ResultCode.INDEXING_IS_UP_TO_DATE, List.of());
+
+    enum ResultCode {
+      INDEXING_IS_UP_TO_DATE,
+      SUCCESSFULLY_INDEXED,
+      REPO_ERROR
+    }
+
+    ResultCode resultCode;
+    List<String> errorDetails;
+  }
+
+  private void notifyCompletion() {}
 }

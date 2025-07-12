@@ -47,8 +47,6 @@ public class MapsServerApplication extends Application<MapsServerConfig> {
         new JdbiFactory()
             .build(environment, configuration.getDatabase(), "postgresql-connection-pool");
 
-    MapsModuleRowMappers.rowMappers().forEach(jdbi::registerRowMapper);
-
     if (configuration.isMapIndexingEnabled()) {
       environment
           .lifecycle()
@@ -62,6 +60,5 @@ public class MapsServerApplication extends Application<MapsServerConfig> {
       log.info("Map indexing is disabled");
     }
     environment.jersey().register(MapsController.build(jdbi));
-    environment.jersey().register(MapTagAdminController.build(jdbi));
   }
 }

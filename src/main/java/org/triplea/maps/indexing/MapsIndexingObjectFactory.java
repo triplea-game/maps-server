@@ -2,17 +2,9 @@ package org.triplea.maps.indexing;
 
 import io.dropwizard.lifecycle.Managed;
 import java.time.Duration;
-import java.time.Instant;
-import java.util.function.BiPredicate;
 import lombok.experimental.UtilityClass;
 import org.jdbi.v3.core.Jdbi;
-import org.triplea.http.client.github.GithubClient;
-import org.triplea.http.client.github.MapRepoListing;
 import org.triplea.maps.MapsServerConfig;
-import org.triplea.maps.indexing.tasks.CommitDateFetcher;
-import org.triplea.maps.indexing.tasks.DownloadSizeFetcher;
-import org.triplea.maps.indexing.tasks.MapDescriptionReader;
-import org.triplea.maps.indexing.tasks.MapNameReader;
 import org.triplea.server.lib.scheduled.tasks.ScheduledTask;
 
 @UtilityClass
@@ -40,18 +32,6 @@ public class MapsIndexingObjectFactory {
         //                .mapIndexDao(jdbi.onDemand(MapIndexDao.class))
         //                .indexingTaskDelaySeconds(configuration.getIndexingTaskDelaySeconds())
         //                .build())
-        .build();
-  }
-
-  MapIndexingTask mapIndexingTask(
-      final GithubClient githubApiClient,
-      final BiPredicate<MapRepoListing, Instant> skipMapIndexingCheck) {
-    return MapIndexingTask.builder()
-        .lastCommitDateFetcher(CommitDateFetcher.builder().githubClient(githubApiClient).build())
-        .skipMapIndexingCheck(skipMapIndexingCheck)
-        .mapNameReader(MapNameReader.builder().build())
-        .mapDescriptionReader(new MapDescriptionReader())
-        .downloadSizeFetcher(new DownloadSizeFetcher())
         .build();
   }
 }

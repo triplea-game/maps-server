@@ -1,38 +1,23 @@
-map_tag:
-  - id: 500
-    name: Category
+map_tag_category:
+  - id: 3300
+    name: era
     display_order: 1
-  - id: 800
-    name: Rating
+  - id: 8800
+    name: difficulty
     display_order: 2
 
-map_tag_allowed_value:
-  - id: 5000
-    map_tag_id: 500
-    value: BEST
-  - id: 5001
-    map_tag_id: 500
-    value: GOOD
-  - id: 5002
-    map_tag_id: 500
-    value: AWESOME
-  - id: 6000
-    map_tag_id: 800
-    value: 1
-  - id: 6001
-    map_tag_id: 800
-    value: 2
+map_tag:
+  - id: 100
+    map_tag_category_id: 3300
+    value: ancient
+  - id: 200
+    map_tag_category_id: 8800
+    value: easy
 
-map_tag_value:
+map_index_tag:
   - id: 3000
-    map_tag_id: 500
+    map_tag_id: 100
     map_index_id: 10
-    map_tag_allowed_value_id: 5000
   - id: 3001
-    map_tag_id: 800
+    map_tag_id: 200
     map_index_id: 10
-    map_tag_allowed_value_id: 6000
-  - id: 3002
-    map_tag_id: 800
-    map_index_id: 20
-    map_tag_allowed_value_id: 6000

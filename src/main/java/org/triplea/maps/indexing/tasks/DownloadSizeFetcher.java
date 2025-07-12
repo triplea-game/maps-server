@@ -12,7 +12,6 @@ import java.util.function.Function;
 import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.triplea.http.client.github.MapRepoListing;
 import org.triplea.io.ContentDownloader;
 import org.triplea.io.FileUtils;
 import org.triplea.java.function.ThrowingFunction;
@@ -24,17 +23,16 @@ import org.triplea.java.function.ThrowingFunction;
  * URI to a temp file and then returning the size of that temp file. The temp file is then deleted.
  */
 @Slf4j
-public class DownloadSizeFetcher implements Function<MapRepoListing, Optional<Long>> {
+public class DownloadSizeFetcher implements Function<URI, Optional<Long>> {
 
+  @SuppressWarnings("resource")
   @Setter(value = AccessLevel.PACKAGE, onMethod_ = @VisibleForTesting)
   private ThrowingFunction<URI, InputStream, IOException> downloadFunction =
       (uri -> new ContentDownloader(uri).getStream());
 
   @Override
-  public Optional<Long> apply(final MapRepoListing mapRepoListing) {
-    final URI uri = URI.create(new DownloadUriCalculator().apply(mapRepoListing));
-
-    log.info("Checking file size, downloading: " + uri);
+  public Optional<Long> apply(URI uri) {
+    log.info("Checking file size, downloading: {}", uri);
     final Path tempFile = FileUtils.createTempFile().orElse(null);
     if (tempFile == null) {
       return Optional.empty();
