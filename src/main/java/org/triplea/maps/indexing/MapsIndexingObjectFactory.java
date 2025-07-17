@@ -4,7 +4,7 @@ import io.dropwizard.lifecycle.Managed;
 import java.time.Duration;
 import lombok.experimental.UtilityClass;
 import org.jdbi.v3.core.Jdbi;
-import org.triplea.maps.MapsServerConfig;
+import org.triplea.maps.SupportServerConfig;
 import org.triplea.server.lib.scheduled.tasks.ScheduledTask;
 
 @UtilityClass
@@ -14,7 +14,7 @@ public class MapsIndexingObjectFactory {
    * 'start()' method must be called for map indexing to begin.
    */
   public static Managed buildMapsIndexingSchedule(
-      final MapsServerConfig configuration, final Jdbi jdbi) {
+      final SupportServerConfig configuration, final Jdbi jdbi) {
 
     //    var githubApiClient = configuration.createGithubApiClient();
 

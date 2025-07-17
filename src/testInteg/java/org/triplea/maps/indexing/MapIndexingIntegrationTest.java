@@ -4,17 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.triplea.http.client.github.MapRepoListing;
-import org.triplea.maps.MapsServerConfig;
+import org.triplea.maps.SupportServerConfig;
 
 /** Validate we can scrape a real map on github and scrape correct data. */
 public class MapIndexingIntegrationTest {
 
   @Test
   void runIndexingOnTestMap() {
-    MapsServerConfig mapsServerConfig = new MapsServerConfig();
-    mapsServerConfig.setGithubMapsOrgName("triplea-maps");
+    SupportServerConfig supportServerConfig = new SupportServerConfig();
+    supportServerConfig.setGithubMapsOrgName("triplea-maps");
 
-    final MapIndexer mapIndexerRunner = MapIndexer.build(mapsServerConfig.createGithubApiClient());
+    final MapIndexer mapIndexerRunner =
+        MapIndexer.build(supportServerConfig.createGithubApiClient());
 
     final MapIndex result =
         mapIndexerRunner.apply(

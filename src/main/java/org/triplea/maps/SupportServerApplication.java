@@ -17,7 +17,7 @@ import org.triplea.maps.indexing.MapsIndexingObjectFactory;
  * configuration properties from 'AppConfig'.
  */
 @Slf4j
-public class MapsServerApplication extends Application<MapsServerConfig> {
+public class SupportServerApplication extends Application<SupportServerConfig> {
 
   private static final String[] DEFAULT_ARGS = new String[] {"server", "configuration.yml"};
 
@@ -26,13 +26,13 @@ public class MapsServerApplication extends Application<MapsServerConfig> {
    * use default values suitable for local development.
    */
   public static void main(final String[] args) throws Exception {
-    final MapsServerApplication application = new MapsServerApplication();
+    final SupportServerApplication application = new SupportServerApplication();
     // if no args are provided then we will use default values.
     application.run(args.length == 0 ? DEFAULT_ARGS : args);
   }
 
   @Override
-  public void initialize(final Bootstrap<MapsServerConfig> bootstrap) {
+  public void initialize(final Bootstrap<SupportServerConfig> bootstrap) {
     // enable environment variables in configuration.yml
     bootstrap.setConfigurationSourceProvider(
         new SubstitutingSourceProvider(
@@ -42,7 +42,7 @@ public class MapsServerApplication extends Application<MapsServerConfig> {
   }
 
   @Override
-  public void run(final MapsServerConfig configuration, final Environment environment) {
+  public void run(final SupportServerConfig configuration, final Environment environment) {
     final Jdbi jdbi =
         new JdbiFactory()
             .build(environment, configuration.getDatabase(), "postgresql-connection-pool");

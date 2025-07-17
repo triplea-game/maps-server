@@ -13,7 +13,7 @@ import org.triplea.http.client.github.GithubClient;
  * class. Values can be injected into the application by using environment variables in the server
  * YML configuration file.
  */
-public class MapsServerConfig extends Configuration {
+public class SupportServerConfig extends Configuration {
   @JsonProperty @Getter private final DataSourceFactory database = new DataSourceFactory();
 
   /** Webservice token, should be an API token for the TripleA builder bot account. */
