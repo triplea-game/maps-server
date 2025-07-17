@@ -1,4 +1,4 @@
-package org.triplea.maps;
+package org.triplea.server;
 
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
@@ -9,6 +9,7 @@ import io.dropwizard.jdbi3.JdbiFactory;
 import io.dropwizard.jdbi3.bundles.JdbiExceptionsBundle;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
+import org.triplea.maps.MapsController;
 import org.triplea.maps.indexing.MapsIndexingObjectFactory;
 
 /**

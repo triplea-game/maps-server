@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.triplea.http.client.github.MapRepoListing;
-import org.triplea.maps.SupportServerConfig;
+import org.triplea.server.SupportServerConfig;
 
 /** Validate we can scrape a real map on github and scrape correct data. */
 public class MapIndexingIntegrationTest {

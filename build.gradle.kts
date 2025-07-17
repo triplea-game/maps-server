@@ -25,7 +25,7 @@ repositories {
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"] = "org.triplea.maps.SupportServerApplication"
+        attributes["Main-Class"] = "org.triplea.server.SupportServerApplication"
     }
 }
 

@@ -4,7 +4,7 @@ import io.dropwizard.lifecycle.Managed;
 import java.time.Duration;
 import lombok.experimental.UtilityClass;
 import org.jdbi.v3.core.Jdbi;
-import org.triplea.maps.SupportServerConfig;
+import org.triplea.server.SupportServerConfig;
 import org.triplea.server.lib.scheduled.tasks.ScheduledTask;
 
 @UtilityClass

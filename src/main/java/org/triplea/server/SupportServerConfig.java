@@ -1,4 +1,4 @@
-package org.triplea.maps;
+package org.triplea.server;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.core.Configuration;
