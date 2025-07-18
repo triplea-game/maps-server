@@ -22,21 +22,22 @@ services:
       dockerfile: Dockerfile
     command: >
       -locations=filesystem:/flyway/sql
-      -connectRetries=60
-      -user=maps_user
-      -password=maps_user
-      -url=jdbc:postgresql://database:5432/maps_db
+      -connectRetries=6
+      -connectRetriesInterval=5
+      -user=support_user
+      -password=support_user
+      -url=jdbc:postgresql://database:5432/support_db
       -ignoreMigrationPatterns="repeatable:missing"
       migrate
     depends_on:
       - database
-  maps:
+  server:
     build:
       dockerfile: Dockerfile
     environment:
-      - DATABASE_USER=maps_user
-      - DATABASE_PASSWORD=maps_user
-      - DB_URL=database:5432/maps_db
+      - DATABASE_USER=support_user
+      - DATABASE_PASSWORD=support_user
+      - DB_URL=database:5432/support_db
     ports:
       - "${SERVER_PORT}:8080"
     depends_on:

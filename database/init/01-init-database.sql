@@ -1,2 +1,2 @@
-create user maps_user with password 'maps_user';
-create database maps_db owner maps_user;
+create user support_user with password 'support_user';
+create database support_db owner support_user;
