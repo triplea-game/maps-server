@@ -1,9 +1,11 @@
 SHELL=/bin/bash
 
+.PHONY: help task targets
 help tasks targets: ## Show this help text
 	grep -h -E '^[a-z]+.*:' $(MAKEFILE_LIST) | \
 		awk -F ":|#+" '{printf "\033[31m%s \033[0m \n   %s \033[0m\n    \033[3;37mDepends On: \033[0m [ %s ]\n", $$1, $$3, $$2}'
 
+.PHONY: printVersions
 printVersions: ## Prints versions of system dependencies (EG: java, docker)
 	echo -e "\033[31m### Java Version on OS ###\033[0m"
 	java -version
@@ -14,9 +16,11 @@ printVersions: ## Prints versions of system dependencies (EG: java, docker)
 	echo -e "\n\033[31m### Versions used by Gradle ###\033[0m"
 	./gradlew --version
 
+.PHONY: format
 format: ## Runs formatting
 	./gradlew spotlessApply
 
+.PHONY: testForPr
 testForPr: ## Runs all checks used to verify a Pull-Request
 	./gradlew check
 
@@ -40,14 +44,17 @@ connectDb: up ## Connects to locally running docker database
 serverLogs: ## Util command to print the server logs
 	docker logs support-server-server-1
 
+.PHONEY: buildContainers
 buildContainers: ## Creates 'docker container' build artifacts
 	./gradlew shadowJar
 	docker build database -f database/flyway.Dockerfile --tag ghcr.io/triplea-game/support-server/flyway:latest
 	docker build . --tag ghcr.io/triplea-game/support-server/server:latest
 
+.PHONEY: pushContainers
 pushContainers: buildContainers ## Pushes 'docker container' build artifacts to github docker container registry
 	docker push ghcr.io/triplea-game/support-server/flyway:latest
 	docker push ghcr.io/triplea-game/support-server/server:latest
 
+.PHONEY: localBuild
 localBuild: ## Builds 'triplea' game client dependency, useful if working on shared libraries between 'support-server' and 'triplea'
 	./gradlew --info --include-build ../triplea compileJava
