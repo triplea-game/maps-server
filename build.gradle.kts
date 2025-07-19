@@ -127,7 +127,7 @@ dependencies {
     implementation("triplea:websocket-client:2.7.15062")
     runtimeOnly("org.postgresql:postgresql:42.7.7")
 
-    testImplementation("com.github.database-rider:rider-junit5:1.43.0")
+    testImplementation("com.github.database-rider:rider-junit5:1.44.0")
     testImplementation("com.github.npathai:hamcrest-optional:2.0.0")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
     testImplementation("io.dropwizard:dropwizard-testing:4.0.7")
