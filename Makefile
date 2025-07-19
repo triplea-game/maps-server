@@ -41,7 +41,8 @@ serverLogs: ## Util command to print the server logs
 	docker logs support-server-server-1
 
 buildContainers: ## Creates 'docker container' build artifacts
-	docker build database/sql --tag ghcr.io/triplea-game/support-server/flyway:latest
+	./gradlew shadowJar
+	docker build database -f database/flyway.Dockerfile --tag ghcr.io/triplea-game/support-server/flyway:latest
 	docker build . --tag ghcr.io/triplea-game/support-server/server:latest
 
 pushContainers: buildContainers ## Pushes 'docker container' build artifacts to github docker container registry

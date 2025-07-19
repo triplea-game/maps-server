@@ -1,5 +1,18 @@
 # Support Server
 
+## Tech Overview
+
+- Java 21
+- DropWizard (http server)
+- Junit5 (unit tests)
+- assertj (unit tests)
+- JDBI (no ORM, JDBI instead)
+- Postgres (database layer)
+- Docker & Docker Compose 
+- gradle (build tool)
+- Makefile (developer build commands)
+
+
 ## Development
 
 If working on shared code between `triplea` and `support-server`, see: `make localBuild`.
@@ -18,12 +31,17 @@ which stands up database, runs migration (with flyway), and launches the server.
 
 ## Deployment
 
+### Output Artifacts
+
+(1) 'Application' Docker image for running the support-server application
+
+(2) 'Flyway' Docker image containing database migrations
+
+
+### CI/CD
+
 On merge to master:
 - builds a new docker image & publishes the new image to Github Packages
-- deploys to production:
-    - sets up production environment (idempotent install)
-    - runs database migration
-    - triggers production environment blue/green deployment
 
 See:
 - `.github/workflows/master.yml`
