@@ -36,23 +36,23 @@ public class IntegTestExtension
   protected static String getDatabaseUrl() {
     var host = System.getProperty("database_1.host");
     var port = System.getProperty("database_1.tcp.5432");
-    return String.format("jdbc:postgresql://%s:%s/maps_db", host, port);
+    return String.format("jdbc:postgresql://%s:%s/support_db", host, port);
   }
 
   @Override
   public void beforeAll(final ExtensionContext context) {
-    var host = System.getProperty("maps_1.host");
-    var port = System.getProperty("maps_1.tcp.8080");
+    var host = System.getProperty("server_1.host");
+    var port = System.getProperty("server_1.tcp.8080");
     final String localUri = String.format("http://%s:%s", host, port);
     serverUri = URI.create(localUri);
 
     if (jdbi == null) {
-      jdbi = Jdbi.create(getDatabaseUrl(), "maps_user", "maps_user");
+      jdbi = Jdbi.create(getDatabaseUrl(), "support_user", "support_user");
       jdbi.installPlugin(new SqlObjectPlugin());
     }
     GlobalConfig.instance().getDbUnitConfig().url(getDatabaseUrl());
-    GlobalConfig.instance().getDbUnitConfig().user("maps_user");
-    GlobalConfig.instance().getDbUnitConfig().password("maps_user");
+    GlobalConfig.instance().getDbUnitConfig().user("support_user");
+    GlobalConfig.instance().getDbUnitConfig().password("support_user");
     GlobalConfig.instance().getDbUnitConfig().driver("org.postgresql.Driver");
   }
 

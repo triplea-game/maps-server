@@ -1,4 +1,32 @@
-# Maps Server
+# Support Server
+
+## Development
+
+If working on shared code between `triplea` and `support-server`, see: `make localBuild`.
+Warning: First make sure that the local triplea project can build cleanly.
+
+- Run `make help` for list of full commands
+- `make verify` will run formatting and all tests (unit+integ)
+
+### Integration Tests
+
+These are tests that run against a live database & server running on locally.
+The server & database are set up with docker-compose.
+First we build a shadow jar, then we use a gradle plugin to launch docker-compose
+which stands up database, runs migration (with flyway), and launches the server.
+
+
+## Deployment
+
+On merge to master:
+- builds a new docker image & publishes the new image to Github Packages
+- deploys to production:
+    - sets up production environment (idempotent install)
+    - runs database migration
+    - triggers production environment blue/green deployment
+
+See:
+- `.github/workflows/master.yml`
 
 
 ## Map Indexing Overview
@@ -32,40 +60,6 @@ this is fully automated.
 (6) download size. Whenever a map repository changes, the server can actually physically
 downoad the map file and determine the size. The download size is stored in database,
 and can be returned as part of the 'list-maps' payload to clients.
-
-
-
-
-## Development
-
-./gradlew --info --include-build ../triplea compileJava
-
-- gotchya, make sure 'triplea' main project (the included build) compiles successfully!
-
-`./gradlew clean` will remove stop all docker containers and remove database data.
-
-
-## Deployment
-
-On merge to master:
-- builds a new docker image & publishes the new image to Github Packages
-- deploys to production:
-    - sets up production environment (idempotent install)
-    - runs database migration
-    - triggers production environment blue/green deployment
-
-See:
-- `.github/workflows/master.yml`
-- `deploy/run.sh`
-
-
-### Connect to DB:
-
-Typically something like this (double check the container name, that can change):
-
-```bash
-docker exec -it --user postgres maps-server-database-1 psql maps_db
-```
 
 
 ### Maps System Design

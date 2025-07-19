@@ -25,7 +25,7 @@ repositories {
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"] = "org.triplea.maps.MapsServerApplication"
+        attributes["Main-Class"] = "org.triplea.server.SupportServerApplication"
     }
 }
 
@@ -51,7 +51,6 @@ configurations[testInteg.runtimeOnlyConfigurationName].extendsFrom(configuration
 
 val testIntegTask = tasks.register<Test>("testInteg") {
     group = "verification"
-    useJUnitPlatform()
     testClassesDirs = sourceSets["testInteg"].output.classesDirs
     classpath = sourceSets["testInteg"].runtimeClasspath
 }
@@ -60,34 +59,38 @@ tasks.check {
     dependsOn(testIntegTask)
 }
 
+
+///* docker compose used to set up integ tests, starts a server and database */
+// See: https://github.com/avast/gradle-docker-compose-plugin
+dockerCompose {
+    captureContainersOutput = true
+    isRequiredBy(testIntegTask)
+    setProjectName("support-server")
+    // suppress unset variable warning, assign variables to empty string (which will result in random port numbers)
+    environment = mapOf("DATABASE_PORT" to "", "SERVER_PORT" to "")
+}
+
+tasks.composeBuild {
+    dependsOn(tasks.shadowJar)
+}
+
 tasks.register<Exec>("dockerComposeClean") {
     group = "docker"
     description = "Docker compose stop and removes volumes"
     commandLine("docker", "compose", "down", "--volumes")
 }
 
-///* docker compose used to set up integ tests, starts a server and database */
-// See: https://github.com/avast/gradle-docker-compose-plugin
-configure<com.avast.gradle.dockercompose.ComposeExtension> {
-    removeContainers.set(false)
-    stopContainers.set(false)
-    isRequiredBy(testIntegTask)
-    setProjectName("maps-server")
-}
-
-
-tasks.composeBuild {
-    dependsOn(tasks.shadowJar)
-}
-
 tasks.clean {
     dependsOn(tasks.findByName("dockerComposeClean"))
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-    testLogging {
-        events("standardOut", "standardError", "skipped", "failed")
+tasks {
+    withType<Test> {
+        useJUnitPlatform()
+        testLogging {
+            events("standardOut", "standardError", "skipped", "failed")
+        }
+        jvmArgs("-XX:+EnableDynamicAgentLoading")
     }
 }
 

@@ -1,5 +1,5 @@
 connectionConfig:
   driver: "org.postgresql.Driver"
-  url: "jdbc:postgresql://localhost:5432/lobby_db"
-  user: "lobby_user"
-  password: "lobby"
+  url: "jdbc:postgresql://localhost:5432/support_db"
+  user: "support_user"
+  password: "support_user"

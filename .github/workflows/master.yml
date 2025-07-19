@@ -18,13 +18,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - name: Run Build Checks
-        # We skip 'spotlessApply' such that only 'spotlessCheck' will run to validate formatting.
-        # This is a good setup for a CI server, meanwhile if a developer runs 'verify', they
-        # will have the 'spotlessApply' task run to automatically format the code.
-        run: ./verify.sh --exclude-task spotlessApply
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Login to GitHub Container Registry
         if: ${{ env.IS_MASTER_BUILD }}
         uses: docker/login-action@v1
@@ -32,19 +25,17 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: build database docker container
+      - name: Run PR tests
+        run: make testForPr
+        env: { GH_TOKEN: ${ { secrets.GITHUB_TOKEN } } }
+      - name: build and push containers
         if: ${{ env.IS_MASTER_BUILD }}
-        run: |
-          docker build database/sql --tag ghcr.io/triplea-game/maps-server/flyway:latest
-          docker push ghcr.io/triplea-game/lobby/maps-server:latest
-      - name: build server docker container
-        if: ${{ env.IS_MASTER_BUILD }}
-        run: |
-          docker build . --tag ghcr.io/triplea-game/maps-server/server:latest
-          docker push ghcr.io/triplea-game/maps-server/server:latest
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: make pushContainers
+
+#      - uses: webfactory/ssh-agent@v0.9.0
+#        with:
+#          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
 #      - name: Update production
 #        run: |
 #          pip install ansible
