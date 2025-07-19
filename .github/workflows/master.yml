@@ -27,7 +27,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Run PR tests
         run: make testForPr
-        env: { GH_TOKEN: ${ { secrets.GITHUB_TOKEN } } }
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: build and push containers
         if: ${{ env.IS_MASTER_BUILD }}
         run: make pushContainers
