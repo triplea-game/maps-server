@@ -115,7 +115,7 @@ dependencies {
     implementation("javax.activation:activation:1.1.1")
     implementation("javax.servlet:servlet-api:2.5")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
-    implementation("org.apache.httpcomponents:httpclient:4.3.4")
+    implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.java-websocket:Java-WebSocket:1.6.0")
     implementation("org.jdbi:jdbi3-core:3.49.5")
     implementation("org.jdbi:jdbi3-sqlobject:3.49.5")
