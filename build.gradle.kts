@@ -119,7 +119,7 @@ dependencies {
     implementation("org.java-websocket:Java-WebSocket:1.6.0")
     implementation("org.jdbi:jdbi3-core:3.49.5")
     implementation("org.jdbi:jdbi3-sqlobject:3.49.5")
-    implementation("org.snakeyaml:snakeyaml-engine:2.9")
+    implementation("org.snakeyaml:snakeyaml-engine:2.10")
     implementation("triplea:domain-data:2.7.15062")
     implementation("triplea:feign-common:2.7.15062")
     implementation("triplea:java-extras:2.7.15062")
