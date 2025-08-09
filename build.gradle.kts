@@ -101,17 +101,24 @@ spotless {
     }
 }
 
+val dropWizardVersion = "4.0.7"
+val feignVersion = "13.6"
+val jaxbVersion = "4.0.5"
+val junitVersion = "5.13.4"
+val mockitoVersion = "5.18.0"
+val tripleaVersion = "2.7.15062"
+
 dependencies {
     implementation("at.favre.lib:bcrypt:0.10.2")
     implementation("be.tomcools:dropwizard-websocket-jsr356-bundle:4.0.0")
     implementation("com.sun.mail:jakarta.mail:2.0.1")
-    implementation("com.sun.xml.bind:jaxb-core:4.0.5")
-    implementation("com.sun.xml.bind:jaxb-impl:4.0.5")
-    implementation("io.dropwizard:dropwizard-auth:4.0.7")
-    implementation("io.dropwizard:dropwizard-core:4.0.7")
-    implementation("io.dropwizard:dropwizard-jdbi3:4.0.7")
-    implementation("io.github.openfeign:feign-core:13.6")
-    implementation("io.github.openfeign:feign-gson:13.6")
+    implementation("com.sun.xml.bind:jaxb-core:$jaxbVersion")
+    implementation("com.sun.xml.bind:jaxb-impl:$jaxbVersion")
+    implementation("io.dropwizard:dropwizard-auth:$dropWizardVersion")
+    implementation("io.dropwizard:dropwizard-core:$dropWizardVersion")
+    implementation("io.dropwizard:dropwizard-jdbi3:$dropWizardVersion")
+    implementation("io.github.openfeign:feign-core:$feignVersion")
+    implementation("io.github.openfeign:feign-gson:$feignVersion")
     implementation("javax.activation:activation:1.1.1")
     implementation("javax.servlet:servlet-api:2.5")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
@@ -120,25 +127,25 @@ dependencies {
     implementation("org.jdbi:jdbi3-core:3.49.5")
     implementation("org.jdbi:jdbi3-sqlobject:3.49.5")
     implementation("org.snakeyaml:snakeyaml-engine:2.10")
-    implementation("triplea:domain-data:2.7.15062")
-    implementation("triplea:feign-common:2.7.15062")
-    implementation("triplea:java-extras:2.7.15062")
-    implementation("triplea:lobby-client:2.7.15062")
-    implementation("triplea:websocket-client:2.7.15062")
+    implementation("triplea:domain-data:$tripleaVersion")
+    implementation("triplea:feign-common:$tripleaVersion")
+    implementation("triplea:java-extras:$tripleaVersion")
+    implementation("triplea:lobby-client:$tripleaVersion")
+    implementation("triplea:websocket-client:$tripleaVersion")
     runtimeOnly("org.postgresql:postgresql:42.7.7")
 
     testImplementation("com.github.database-rider:rider-junit5:1.44.0")
     testImplementation("com.github.npathai:hamcrest-optional:2.0.0")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
-    testImplementation("io.dropwizard:dropwizard-testing:4.0.7")
+    testImplementation("io.dropwizard:dropwizard-testing:$dropWizardVersion")
     testImplementation("org.awaitility:awaitility:4.3.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.4")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.13.4")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 
     testImplementation("org.assertj:assertj-core:3.27.3")
-    testImplementation("org.mockito:mockito-core:5.18.0")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.18.0")
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
     testImplementation("org.wiremock:wiremock:3.13.1")
     testImplementation("ru.lanwen.wiremock:wiremock-junit5:1.3.1")
     testImplementation("uk.co.datumedge:hamcrest-json:0.3")
