@@ -111,7 +111,7 @@ val tripleaVersion = "2.7.15062"
 dependencies {
     implementation("at.favre.lib:bcrypt:0.10.2")
     implementation("be.tomcools:dropwizard-websocket-jsr356-bundle:4.0.0")
-    implementation("com.sun.mail:jakarta.mail:2.0.1")
+    implementation("com.sun.mail:jakarta.mail:2.0.2")
     implementation("com.sun.xml.bind:jaxb-core:$jaxbVersion")
     implementation("com.sun.xml.bind:jaxb-impl:$jaxbVersion")
     implementation("io.dropwizard:dropwizard-auth:$dropWizardVersion")
@@ -136,7 +136,7 @@ dependencies {
 
     testImplementation("com.github.database-rider:rider-junit5:1.44.0")
     testImplementation("com.github.npathai:hamcrest-optional:2.0.0")
-    testImplementation("com.sun.mail:jakarta.mail:2.0.1")
+    testImplementation("com.sun.mail:jakarta.mail:2.0.2")
     testImplementation("io.dropwizard:dropwizard-testing:$dropWizardVersion")
     testImplementation("org.awaitility:awaitility:4.3.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
