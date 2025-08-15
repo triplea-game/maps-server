@@ -105,7 +105,7 @@ val dropWizardVersion = "4.0.7"
 val feignVersion = "13.6"
 val jaxbVersion = "4.0.5"
 val junitVersion = "5.13.4"
-val mockitoVersion = "5.18.0"
+val mockitoVersion = "5.19.0"
 val tripleaVersion = "2.7.15062"
 
 dependencies {
