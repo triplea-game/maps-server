@@ -101,7 +101,7 @@ spotless {
     }
 }
 
-val dropWizardVersion = "4.0.7"
+val dropWizardVersion = "4.0.16"
 val feignVersion = "13.6"
 val jaxbVersion = "4.0.5"
 val junitVersion = "5.13.4"
